@@ -1,0 +1,17 @@
+# HereGravity Configuration
+# Use standard block names (e.g., TERRACOTTA, CLAY) 
+# Or use Minecraft tags by adding a '#' (e.g., '#logs', '#dirt', '#leaves')
+
+gravity-list:
+  '#logs':
+    breaks-on-fall: true
+  '#dirt':
+    breaks-on-fall: false
+  TERRACOTTA:
+    breaks-on-fall: false
+  CLAY:
+    breaks-on-fall: true
+  SNOW_BLOCK:
+    breaks-on-fall: true
+  GLOWSTONE:
+    breaks-on-fall: true

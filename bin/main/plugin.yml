@@ -1,0 +1,6 @@
+name: HereGravity
+version: '${version}'
+main: com.heregravity.heregravity.HereGravity
+description: Applies selective sand-physics to logs and terrain, with instant leaf shattering.
+api-version: '1.21'
+author: Antigravity
