@@ -64,7 +64,7 @@ Ensure you have Java 21 and Gradle configured. Build using the provided Gradle w
 ```
 
 The compiled, deployment-ready JAR will be located at:
-`build/libs/HereGravity-1.0.0.jar`
+`build/libs/HereGravity-1.0.1.jar`
 
 ---
 
