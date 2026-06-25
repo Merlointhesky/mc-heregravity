@@ -20,12 +20,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class HereGravity extends JavaPlugin implements Listener {
 
     // Using EnumMap to store the Material and its specific breaks-on-fall setting
     private final Map<Material, Boolean> gravityBlocks = new EnumMap<>(Material.class);
+    private final Set<String> scheduledFalls = new HashSet<>();
+    private final Set<String> scheduledDecays = new HashSet<>();
+
+    private String getBlockKey(Block block) {
+        return block.getWorld().getUID() + ":" + block.getX() + ":" + block.getY() + ":" + block.getZ();
+    }
 
     @Override
     public void onEnable() {
@@ -80,11 +88,18 @@ public final class HereGravity extends JavaPlugin implements Listener {
         if (Tag.LEAVES.isTagged(type)) {
             if (block.getBlockData() instanceof Leaves leaves) {
                 if (leaves.getDistance() > 6 && !leaves.isPersistent()) {
-                    Bukkit.getScheduler().runTask(this, () -> {
-                        if (block.getType() == type) {
-                            block.breakNaturally();
-                        }
-                    });
+                    String key = getBlockKey(block);
+                    if (scheduledDecays.add(key)) {
+                        Bukkit.getScheduler().runTask(this, () -> {
+                            try {
+                                if (block.getType() == type) {
+                                    block.breakNaturally();
+                                }
+                            } finally {
+                                scheduledDecays.remove(key);
+                            }
+                        });
+                    }
                 }
             }
             return;
@@ -95,14 +110,21 @@ public final class HereGravity extends JavaPlugin implements Listener {
             Block below = block.getRelative(BlockFace.DOWN);
 
             if (below.isEmpty() || below.isLiquid()) {
-                Bukkit.getScheduler().runTask(this, () -> {
-                    if (block.getType() == type && (block.getRelative(BlockFace.DOWN).isEmpty()
-                            || block.getRelative(BlockFace.DOWN).isLiquid())) {
-                        BlockData data = block.getBlockData();
-                        block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, 0, 0.5), data);
-                        block.setType(Material.AIR);
-                    }
-                });
+                String key = getBlockKey(block);
+                if (scheduledFalls.add(key)) {
+                    Bukkit.getScheduler().runTask(this, () -> {
+                        try {
+                            if (block.getType() == type && (block.getRelative(BlockFace.DOWN).isEmpty()
+                                    || block.getRelative(BlockFace.DOWN).isLiquid())) {
+                                BlockData data = block.getBlockData();
+                                block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, 0, 0.5), data);
+                                block.setType(Material.AIR);
+                            }
+                        } finally {
+                            scheduledFalls.remove(key);
+                        }
+                    });
+                }
             }
         }
     }

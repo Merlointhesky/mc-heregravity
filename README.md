@@ -64,7 +64,14 @@ Ensure you have Java 21 and Gradle configured. Build using the provided Gradle w
 ```
 
 The compiled, deployment-ready JAR will be located at:
-`build/libs/HereGravity-1.0.1.jar`
+`build/libs/HereGravity-1.0.2.jar`
+
+---
+
+## Recent Changes (v1.0.2)
+
+- **Safeguard Chained Updates**: Implemented concurrent task tracking lists (`scheduledFalls` and `scheduledDecays`) to eliminate duplicate task queue bloat and prevent stack overflow / crash risks from massive recursive block updates (such as large tree chopping).
+- **Version bump & clean build**: Incremented build version to `1.0.2`.
 
 ---
 
